@@ -33,8 +33,6 @@ public class Client extends Application {
     DataOutputStream dos;
 
     @FXML
-    TextField text;
-    @FXML
     Canvas canvas;
     @FXML
     StackPane table;
@@ -61,6 +59,16 @@ public class Client extends Application {
             s2.setHeight(450);
             s2.setTitle("Well marksman");
 
+            ip = InetAddress.getLocalHost();
+            cs = new Socket(ip, port);
+            try {
+                listener = new Listener(this, cs);
+                listener.startGame();
+            }
+            catch (UnknownHostException ex) {
+                System.out.println("ReadyClick: " + ex);
+            }
+
             //ask name page
             FXMLLoader nameAsk = new FXMLLoader(Client.class.getResource("ask-name.fxml"));
             Scene scene1 = new Scene(nameAsk.load(),320,240);
@@ -83,44 +91,44 @@ public class Client extends Application {
     }
 
     //Accept name button
-    public void onAseptClick() {
-
-        try {
-            ip = InetAddress.getLocalHost();
-            cs = new Socket(ip, port);
-            is = cs.getInputStream();
-            os = cs.getOutputStream();
-            dis = new DataInputStream(is);
-            dos = new DataOutputStream(os);
-            String obj_str = text.getText();
-            dos.writeUTF(obj_str);
-            String ans = dis.readUTF();
-            Integer result = Integer.parseInt(ans);
-            if (result == -1) {
-                text.setText("");
-                text.setPromptText("Try another");
-                return;
-            }
-            if (result == -2) {
-                text.setText("");
-                text.setPromptText("Game already started");
-                return;
-            }
-            if (result == -3) {
-                text.setText("");
-                text.setPromptText("No free seats");
-                return;
-            }
-            ans = dis.readUTF();
-            player = gson.fromJson(ans,PlayerData.class);
-
-            s1.close();
-
-        } catch (IOException ex) {
-            text.setText("");
-            System.out.println("Client on accept click: " + ex);
-        }
-    }
+//    public void onAseptClick() {
+//
+//        try {
+//            ip = InetAddress.getLocalHost();
+//            cs = new Socket(ip, port);
+//            is = cs.getInputStream();
+//            os = cs.getOutputStream();
+//            dis = new DataInputStream(is);
+//            dos = new DataOutputStream(os);
+//            String obj_str = text.getText();
+//            dos.writeUTF(obj_str);
+//            String ans = dis.readUTF();
+//            Integer result = Integer.parseInt(ans);
+//            if (result == -1) {
+//                text.setText("");
+//                text.setPromptText("Try another");
+//                return;
+//            }
+//            if (result == -2) {
+//                text.setText("");
+//                text.setPromptText("Game already started");
+//                return;
+//            }
+//            if (result == -3) {
+//                text.setText("");
+//                text.setPromptText("No free seats");
+//                return;
+//            }
+//            ans = dis.readUTF();
+//            player = gson.fromJson(ans,PlayerData.class);
+//
+//            s1.close();
+//
+//        } catch (IOException ex) {
+//            text.setText("");
+//            System.out.println("Client on accept click: " + ex);
+//        }
+//    }
 
     //game controls-------------------------------
     public void onShootClick() {
@@ -133,13 +141,6 @@ public class Client extends Application {
     }
     public void onReadyClick() {
         player.setReady(true);
-        try {
-            listener = new Listener(this, cs);
-            listener.startGame();
-        }
-        catch (UnknownHostException ex) {
-            System.out.println("ReadyClick: " + ex);
-        }
         readyButton.setDisable(true);
     }
     //-----------------------------------------------
@@ -204,5 +205,11 @@ public class Client extends Application {
         player.setAskPause(false);
         player.setAskShoot(false);
         return ans;
+    }
+    public void setPlayer(PlayerData pd) {
+        player = pd;
+        player.setReady(false);
+        player.setAskPause(false);
+        player.setAskShoot(false);
     }
 }

@@ -26,6 +26,19 @@ public class PlayerData {
         askShoot = p.isAskShoot();
     }
 
+    public PlayerData() {
+        x = 0;
+        y = 0;
+        scoreCount = 0;
+        shootCount = 0;
+        askPause = false;
+        ready = false;
+        shootFree = false;
+        number = 0;
+        name = "";
+        askShoot = false;
+    }
+
     public int getY() {
         return y;
     }
