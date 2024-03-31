@@ -132,15 +132,15 @@ public class Client extends Application {
         else pauseButton.setText("Pause");
     }
     public void onReadyClick() {
-        player.setReady(true);
-        try {
-            listener = new Listener(this, cs);
-            listener.startGame();
-        }
-        catch (UnknownHostException ex) {
-            System.out.println("ReadyClick: " + ex);
-        }
-        readyButton.setDisable(true);
+//        player.setReady(true);
+//        try {
+//            listener = new Listener(this, cs);
+//            listener.startGame();
+//        }
+//        catch (UnknownHostException ex) {
+//            System.out.println("ReadyClick: " + ex);
+//        }
+//        readyButton.setDisable(true);
     }
     //-----------------------------------------------
 

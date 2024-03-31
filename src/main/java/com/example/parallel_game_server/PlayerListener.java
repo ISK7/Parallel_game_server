@@ -47,7 +47,7 @@ public class PlayerListener extends Thread {
                 socket.close();
             }
         } catch (IOException ex) {
-            System.out.println(ex);
+            System.out.println("PlayerListener " + ex.getMessage());
         }
     }
 }

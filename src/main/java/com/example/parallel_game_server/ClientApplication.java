@@ -86,8 +86,8 @@ public class ClientApplication extends Application {
             s.close();
             ans = dis.readUTF();
             cv = new ClientVisualizer();
-            cv.startApp(cs,gson.fromJson(ans,PlayerData.class));
-
+            Listener l = new Listener(cv, cs, gson.fromJson(ans,PlayerData.class));
+            l.start();
         } catch (IOException ex) {
             text.setText("");
             System.out.println("Client Application: " + ex);

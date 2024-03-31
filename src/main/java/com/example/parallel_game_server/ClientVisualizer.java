@@ -32,7 +32,6 @@ public class ClientVisualizer extends Application {
     HashMap<Integer,PlayerData> players;
     PlayerData player;
     Color[] colors = {Color.RED, Color.BLUE,Color.GREEN,Color.BLACK};
-    Listener listener;
 
     Socket cs;
     InputStream is;
@@ -76,36 +75,33 @@ public class ClientVisualizer extends Application {
 
     @Override
     public void start(Stage s) throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("hello-view.fxml"));
-//        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-//        listener = new Listener(this, cs);
-//        listener.startGame();
-//        ClientVisualizer cv = fxmlLoader.getController();
-//
-//        cv.setCanvas(canvas);
-//        cv.setBigTee(bigTee);
-//        cv.setSmallTee(smallTee);
-//        cv.setPauseButton(pauseButton);
-//        cv.setReadyButton(readyButton);
-//        cv.setTable(table);
-//
-//
-//        s.setScene(scene);
-//        s.setWidth(600);
-//        s.setHeight(450);
-//        s.setTitle("Well marksman");
-//        s.show();
+        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("hello-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        ClientVisualizer cv = fxmlLoader.getController();
+
+        cv.setCanvas(canvas);
+        cv.setBigTee(bigTee);
+        cv.setSmallTee(smallTee);
+        cv.setPauseButton(pauseButton);
+        cv.setReadyButton(readyButton);
+        cv.setTable(table);
+
+
+        s.setScene(scene);
+        s.setWidth(600);
+        s.setHeight(450);
+        s.setTitle("Well marksman");
+        s.show();
 
     }
 
-    public void startApp(Socket soc, PlayerData pd) {
+    public void setupApp(Socket soc, PlayerData pd) {
         try {
-
-            this.setSocket(soc);
-            this.setPlayer(pd);
-
-            String[] s = {};
-            main(s);
+            FXMLLoader game = new FXMLLoader(ClientApplication.class.getResource("hello-view.fxml"));
+            game.load();
+            ClientVisualizer cv = game.getController();
+            cv.setSocket(soc);
+            cv.setPlayer(pd);
         } catch (Exception ex) {
             System.out.println("Client visualizer: " + ex);
         }
@@ -130,10 +126,10 @@ public class ClientVisualizer extends Application {
         table.getChildren().clear();
     }
     public void drawPlayer(PlayerData p) {
-        int number = p.getNumber();
-        if(!players.containsKey(number)) {
-            players.put(number,p);
-        }
+//        int number = p.getNumber();
+//        if(!players.containsKey(number)) {
+//            players.put(number,p);
+//        }
         if(!p.isReady()) drawGun(p.getY(),Color.GRAY);
         else drawGun(p.getY(),colors[p.getNumber()]);
         drawShoot(p.getX(),p.getY());

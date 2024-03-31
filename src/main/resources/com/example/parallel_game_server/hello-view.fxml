@@ -6,7 +6,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parallel_game_server.Client">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.parallel_game_server.ClientVisualizer">
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#f6ff1f" height="350.0" layoutX="-1.0" stroke="#fbff00" strokeType="INSIDE" width="70.0" />
       <Button layoutX="14.0" layoutY="361.0" mnemonicParsing="false" text="Shoot" onAction="#onShootClick"/>

@@ -3,6 +3,7 @@ package com.example.parallel_game_server;
 import com.example.parallel_game_server.GameData;
 import com.example.parallel_game_server.PlayerData;
 import com.google.gson.Gson;
+import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,16 +17,19 @@ public class Listener extends Thread {
     private GameData gd = null;
     Socket cs;
     private Gson gson = new Gson();
-    Client parent;
+    ClientVisualizer parent;
 
-    public Listener(Client cv, Socket soc) throws UnknownHostException {
+    public Listener(ClientVisualizer cv, Socket soc, PlayerData pd) throws UnknownHostException {
+        try {
             parent = cv;
             cs = soc;
+            parent.start(new Stage());
+            parent.setupApp(soc, pd);
+        }catch (java.io.IOException ex) {
+            System.out.println("Listener: " + ex);
+        }
     }
 
-    public void startGame() {
-        start();
-    }
     @Override
     public void run() {
         try {

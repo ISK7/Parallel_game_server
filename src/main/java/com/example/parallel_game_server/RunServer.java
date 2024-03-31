@@ -57,7 +57,7 @@ public class RunServer extends Thread {
                 pls.add(pl);
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Run server" + e.getMessage());
         }
 
     }
