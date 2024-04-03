@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -27,17 +29,10 @@ public class ClientVisualizer extends Application {
     @FXML
     Circle bigTee, smallTee;
     @FXML
-    Button pauseButton, readyButton;
-
-    HashMap<Integer,PlayerData> players;
+    Button pauseButton, readyButton, shootButton;
     PlayerData player;
+    Stage st;
     Color[] colors = {Color.RED, Color.BLUE,Color.GREEN,Color.BLACK};
-
-    Socket cs;
-    InputStream is;
-    OutputStream os;
-    DataInputStream dis;
-    DataOutputStream dos;
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
@@ -62,17 +57,10 @@ public class ClientVisualizer extends Application {
     public void setReadyButton(Button readyButton) {
         this.readyButton = readyButton;
     }
-    public void setSocket(Socket s) {
-        cs = s;
-    }
 
     public void setPlayer(PlayerData player) {
         this.player = player;
     }
-    public static void main(String[] args) {
-        launch();
-    }
-
     @Override
     public void start(Stage s) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("hello-view.fxml"));
@@ -95,18 +83,31 @@ public class ClientVisualizer extends Application {
 
     }
 
-    public void setupApp(Socket soc, PlayerData pd) {
+    public ClientVisualizer setupApp(PlayerData pd) throws IOException {
         try {
             FXMLLoader game = new FXMLLoader(ClientApplication.class.getResource("hello-view.fxml"));
-            game.load();
+            Scene scene = new Scene(game.load(), 320, 240);
+            Stage s = new Stage();
             ClientVisualizer cv = game.getController();
-            cv.setSocket(soc);
+
             cv.setPlayer(pd);
+
+            s.setScene(scene);
+            s.setWidth(600);
+            s.setHeight(450);
+            s.setTitle("Well marksman");
+            cv.st = s;
+            s.show();
+            return cv;
         } catch (Exception ex) {
             System.out.println("Client visualizer: " + ex);
         }
+        return new ClientVisualizer();
     }
 
+    public void close() {
+        st.close();
+    }
     public void onShootClick() {
         player.setAskShoot(true);
     }
@@ -126,14 +127,10 @@ public class ClientVisualizer extends Application {
         table.getChildren().clear();
     }
     public void drawPlayer(PlayerData p) {
-//        int number = p.getNumber();
-//        if(!players.containsKey(number)) {
-//            players.put(number,p);
-//        }
         if(!p.isReady()) drawGun(p.getY(),Color.GRAY);
         else drawGun(p.getY(),colors[p.getNumber()]);
         drawShoot(p.getX(),p.getY());
-        showScore(p.getY(),p.getName(),p.getScoreCount(),p.getScoreCount());
+        showScore(p.getY(),p.getName(),p.getScoreCount(),p.getShootCount());
     }
 
     public void drawMarks(int x1, int y1, int x2, int y2) {
@@ -142,7 +139,7 @@ public class ClientVisualizer extends Application {
     }
 
     public PlayerData getPlayer() {
-        PlayerData ans = player;
+        PlayerData ans = new PlayerData(player);
         player.setReady(false);
         player.setAskPause(false);
         player.setAskShoot(false);
@@ -151,7 +148,7 @@ public class ClientVisualizer extends Application {
 
 
     private void drawGun(int y, Color c) {
-        double[] xs = {25,25,50};
+        double[] xs = {45,45,70};
         double[] ys = {y-25,y+25,y};
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setStroke(c);
@@ -166,18 +163,17 @@ public class ClientVisualizer extends Application {
         gc.fillOval(x-r,y-r,2*r,2*r);
     }
     private void showScore(int y, String name, Integer sc, Integer sh) {
-        int x = 450;
         Label namel = new Label(name);
-        namel.setLayoutX(x);
-        namel.setLayoutY(y-10);
-        Label score = new Label(sc.toString());
-        Label shoots = new Label(sh.toString());
-        score.setLayoutX(x);
-        score.setLayoutY(y);
-        shoots.setLayoutX(x);
-        shoots.setLayoutY(y+10);
+        Label score = new Label("Score: " + sc.toString());
+        Label shoots = new Label("Shoots: " + sh.toString());
         table.getChildren().add(namel);
         table.getChildren().add(shoots);
         table.getChildren().add(score);
+        table.setAlignment(namel, Pos.TOP_CENTER);
+        table.setAlignment(score, Pos.TOP_CENTER);
+        table.setAlignment(shoots, Pos.TOP_CENTER);
+        table.setMargin(namel, new Insets(y - 10,0,0,0));
+        table.setMargin(score, new Insets(y,0,0,0));
+        table.setMargin(shoots, new Insets(y + 10,0,0,0));
     }
 }

@@ -18,6 +18,7 @@ public class RunServer extends Thread {
     DataInputStream dis;
     DataOutputStream dos;
     Gson gson = new Gson();
+    int x = 70;
 
     List<PlayerListener> pls;
 
@@ -25,7 +26,7 @@ public class RunServer extends Thread {
     public void run()
     {
         try {
-            GameRunner gr = new GameRunner(this);
+            gr = new GameRunner(this);
             ip = InetAddress.getLocalHost();
             ServerSocket socket = new ServerSocket(port);
 
@@ -40,7 +41,7 @@ public class RunServer extends Thread {
                 dis = new DataInputStream(clientSocket.getInputStream());
                 dos = new DataOutputStream(clientSocket.getOutputStream());
                 String name = dis.readUTF();
-                Player player = new Player(50,name,gr);
+                Player player = new Player(name,gr);
                 Integer res = gr.AddPlayer(player);
                 dos.writeUTF(res.toString());
                 if(res < 0) {
@@ -62,6 +63,9 @@ public class RunServer extends Thread {
 
     }
 
+    public void delPlayer(int num) {
+        gr.dellPlayer(num);
+    }
     public void shoot(int n) {
         gr.askShoot(n);
     }
@@ -74,7 +78,9 @@ public class RunServer extends Thread {
 
     public void resetData(GameData gd) {
         for(PlayerListener i : pls) {
-            i.newGameData(gd);
+            i.newGameData(new GameData(gd));
+            if(gd.isWin())
+                delPlayer(i.getNumber());
         }
     }
 

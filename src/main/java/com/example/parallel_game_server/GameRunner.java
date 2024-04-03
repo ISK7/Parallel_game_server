@@ -20,10 +20,14 @@ public class GameRunner extends Thread {
     int bigr = 30;
     int smallr = 15;
     RunServer parent;
+    boolean hasWinner = false;
+    String winner;
 
     public GameRunner(RunServer rs) {
-        bigy = bigr;
-        smally = smallr;
+        bigy = 0;
+        smally = 0;
+        bigx -= bigr;
+        smallx -= smallr;
         parent = rs;
     }
 
@@ -32,11 +36,29 @@ public class GameRunner extends Thread {
         cycle();
     }
 
+    private void toNonActive() {
+        isActive = false;
+        isPause = false;
+        hasWinner = false;
+        winner = "";
+        bigy = 0;
+        smally = 0;
+    }
+    public void addVinner(String wn) {
+        winner = wn;
+        hasWinner = true;
+    }
+
     public void cycle() {
         try {
             while (true) {
-                parent.resetData(new GameData(this));
                 if(!isActive) {
+                    Thread.sleep(20);
+                    continue;
+                }
+                if(hasWinner) {
+                    parent.resetData(new GameData(this));
+                    toNonActive();
                     Thread.sleep(20);
                     continue;
                 }
@@ -51,12 +73,12 @@ public class GameRunner extends Thread {
                 }
                 //Перемещение большей мишени
                 bigy += bigTeeSpeed;
-                if (bigy > maxy - bigr && bigTeeSpeed > 0) bigTeeSpeed *= -1;
-                if (bigy < miny + bigr && bigTeeSpeed < 0) bigTeeSpeed *= -1;
+                if (bigy > maxy - 2 * bigr && bigTeeSpeed > 0) bigTeeSpeed *= -1;
+                if (bigy < miny && bigTeeSpeed < 0) bigTeeSpeed *= -1;
                 //Перемещение меньшей мишени
                 smally += smallTeeSpeed;
-                if (smally > maxy - smallr && smallTeeSpeed > 0) smallTeeSpeed *= -1;
-                if (smally < miny + smallr && smallTeeSpeed < 0) smallTeeSpeed *= -1;
+                if (smally > maxy - 2 * smallr && smallTeeSpeed > 0) smallTeeSpeed *= -1;
+                if (smally < miny && smallTeeSpeed < 0) smallTeeSpeed *= -1;
                 parent.resetData(new GameData(this));
                 Thread.sleep(20);
             }
@@ -72,10 +94,10 @@ public class GameRunner extends Thread {
         return isPause;
     }
     public int checkCross(int x, int y) {
-        if (Math.abs((x - bigx) * (x - bigx) + (y - bigy - bigr) * (y - bigy - bigr)) < bigr * bigr) {
+        if (Math.abs((x - bigx - bigr) * (x - bigx - bigr) + (y - bigy - bigr) * (y - bigy - bigr)) < bigr * bigr) {
             return 1;
         }
-        if (Math.abs((x - smallx) * (x - smallx) + (y - smally - smallr) * (y - smally - smallr)) < smallr * smallr) {
+        if (Math.abs((x - smallx - smallr) * (x - smallx - smallr) + (y - smally - smallr) * (y - smally - smallr)) < smallr * smallr) {
             return 2;
         }
         if (x > smallx + smallr + 5) {
@@ -99,7 +121,10 @@ public class GameRunner extends Thread {
         if(players.size() >= 4) return -3;
         if(isActive) return -2;
         for(Player pl : players) {
-            if(p.getName().equals(pl.getName())) return -1;
+            String pn = p.getPlayerName();
+            String pln = pl.getPlayerName();
+            if(pn.equals(pln))
+                return -1;
         }
         players.add(p);
         int distance = (int)(maxy / (players.size()+1));
@@ -107,6 +132,18 @@ public class GameRunner extends Thread {
             players.get(i).setY(distance*(i+1));
         }
         return players.size()-1;
+    }
+
+    public void dellPlayer(int num) {
+        try {
+            if (players.get(num) != null) {
+                Player pl = players.get(num);
+                players.remove(pl);
+                pl.setIsActive(false);
+            }
+        } catch (Exception ex){
+
+        }
     }
     public void askShoot(int n) {
         players.get(n).tryToShoot();

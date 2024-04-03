@@ -13,6 +13,18 @@ public class PlayerData {
     boolean shootFree;
     boolean askShoot;
     int number;
+    public PlayerData(PlayerData pd) {
+        x = pd.x;
+        y = pd.y;
+        name = pd.name;
+        scoreCount = pd.scoreCount;
+        shootCount = pd.shootCount;
+        askPause = pd.askPause;
+        ready = pd.ready;
+        shootFree = pd.shootFree;
+        askShoot = pd.askShoot;
+        number = pd.number;
+    }
     public PlayerData(Player p) {
         x = p.getX();
         y = p.getY();
@@ -61,16 +73,16 @@ public class PlayerData {
         return name;
     }
 
-    public void setAskPause(boolean askPause) {
-        this.askPause = askPause;
+    public void setAskPause(boolean pause) {
+        askPause = pause;
     }
 
-    public void setReady(boolean ready) {
-        this.ready = ready;
+    public void setReady(boolean askReady) {
+        ready = askReady;
     }
 
-    public void setShootFree(boolean shootFree) {
-        this.shootFree = shootFree;
+    public void setShootFree(boolean askShootFree) {
+        shootFree = askShootFree;
     }
     public void setAskShoot(boolean ask) {
         askShoot = ask;

@@ -14,6 +14,7 @@ public class PlayerListener extends Thread {
     private int number;
     private GameData gd;
     private RunServer parent;
+    private boolean isWin = false;
 
     public void setVal(Socket socket, int n, GameData gd, RunServer runServer) {
         this.socket = socket;
@@ -31,23 +32,36 @@ public class PlayerListener extends Thread {
         try {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             DataInputStream dis = new DataInputStream(socket.getInputStream());
-            try {
-                while (true) {
-                    dos.writeUTF(gson.toJson(gd));
-                    dos.flush();
-                    String ans = dis.readUTF();
-                    PlayerData pd = gson.fromJson(ans, PlayerData.class);
-                    if (pd.getAskShoot()) parent.shoot(number);
-                    if (pd.isReady()) parent.changeReady(number);
-                    if (pd.isAskPause()) parent.changePause(number);
+            synchronized (this) {
+                try {
+                    while (true) {
+                        dos.writeUTF(gson.toJson(gd));
+                        dos.flush();
+                        if(gd.isWin())
+                            break;
+                        String ans = dis.readUTF();
+                        PlayerData pd = gson.fromJson(ans, PlayerData.class);
+                        if (pd.getAskShoot())
+                            parent.shoot(number);
+                        if (pd.isReady())
+                            parent.changeReady(number);
+                        if (pd.isAskPause())
+                            parent.changePause(number);
+                        wait(20);
+                    }
+                } catch (EOFException ex) {
+                    System.out.println("Client " + number + "disconnected!");
+                    socket.close();
+                } catch (InterruptedException ex) {
+                    System.out.println("PlayerListener " + ex.getMessage());
+                    socket.close();
                 }
-
-            } catch (EOFException ex) {
-                System.out.println("Client " + number + "disconnected!");
-                socket.close();
             }
         } catch (IOException ex) {
             System.out.println("PlayerListener " + ex.getMessage());
         }
+    }
+    public int getNumber() {
+        return number;
     }
 }

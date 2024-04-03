@@ -3,7 +3,7 @@ package com.example.parallel_game_server;
 public class Player extends Thread{
     int y;
     int x;
-    final int startX = 50;
+    final int startX = 70;
     final int speed = 8;
     Integer scoreCount;
     Integer shootCount;
@@ -13,6 +13,7 @@ public class Player extends Thread{
     boolean ready;
     GameRunner parent;
     int number;
+    boolean isActive;
     String name;
 
     public Player(PlayerData pd) {
@@ -25,42 +26,43 @@ public class Player extends Thread{
         askPause = pd.isAskPause();
         ready = pd.isReady();
         number = pd.getNumber();
+        isActive = true;
     }
-    public Player(int X, String Name, GameRunner gr) {
+    public Player(String Name, GameRunner gr) {
         shootFree = true;
         askPause = false;
         askShoot = false;
+        isActive = true;
         ready = false;
         scoreCount = 0;
         shootCount = 0;
-        x = X;
+        x = startX;
         name = Name;
         parent = gr;
+        start();
     }
 
     public boolean isReady() {return ready;}
     public boolean isAskPause() {return askPause;}
     public void tryToShoot() {
-        if(shootFree && parent.isAlive()) {
+        if(shootFree && parent.isAlive() && ready) {
             shootFree = false;
             shootCount++;
-            start();
         }
     }
 
     @Override
     public void run() {
         try {
-            while(true) {
+            while(isActive) {
                 //пауза
                 if (parent.isPause()) {
-                    try {
-                        synchronized (this) {
-                            wait();
-                        }
-                    } catch (InterruptedException ex) {
-                        throw ex;
-                    }
+                    Thread.sleep(20);
+                    continue;
+                }
+                if(shootFree) {
+                    Thread.sleep(20);
+                    continue;
                 }
                 //перемещение снаряда
                 x += speed;
@@ -69,7 +71,7 @@ public class Player extends Thread{
                 if (c > -1) {
                     scoreCount += c;
                     finShoot();
-                    break;
+                    if(scoreCount >= 6) parent.addVinner(name);
                 }
                 Thread.sleep(20);
             }
@@ -77,8 +79,12 @@ public class Player extends Thread{
             finShoot();
             System.out.println(ex);
         }
+        System.out.println("thread stop");
     }
 
+    public void setIsActive(boolean a) {
+        isActive = a;
+    }
     private void finShoot() {
         x = startX;
         shootFree = true;
