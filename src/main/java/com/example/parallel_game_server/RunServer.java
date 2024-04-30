@@ -14,7 +14,7 @@ import java.util.List;
 public class RunServer extends Thread {
     int port = 4321;
     InetAddress ip = null;
-    GameRunner gr;
+    private GameRunner gr;
     DataInputStream dis;
     DataOutputStream dos;
     Gson gson = new Gson();
@@ -25,6 +25,16 @@ public class RunServer extends Thread {
     @Override
     public void run()
     {
+//        try {
+//            Class.forName("org.postgresql.Driver");
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//        try {
+//            Class.forName("org.hibernate.dialect.PostgreSQL9Dialect");
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
         try {
             gr = new GameRunner(this);
             ip = InetAddress.getLocalHost();
@@ -42,7 +52,7 @@ public class RunServer extends Thread {
                 dos = new DataOutputStream(clientSocket.getOutputStream());
                 String name = dis.readUTF();
                 Player player = new Player(name,gr);
-                Integer res = gr.AddPlayer(player);
+                Integer res = gr.AddPlayer(player); // При добавлении пароля исправить!
                 dos.writeUTF(res.toString());
                 if(res < 0) {
                     System.out.println("Connecting failure: " + res);
@@ -82,6 +92,10 @@ public class RunServer extends Thread {
             if(gd.isWin())
                 delPlayer(i.getNumber());
         }
+    }
+
+    public ArrayList<LeaderData> askLeaders() {
+        return gr.askLeaders();
     }
 
     public static void main(String[] args) {

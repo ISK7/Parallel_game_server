@@ -6,12 +6,14 @@ public class PlayerData {
     int y;
     int x;
     String name;
+    String password;
     Integer scoreCount;
     Integer shootCount;
     boolean askPause;
     boolean ready;
     boolean shootFree;
     boolean askShoot;
+    boolean askLeaders;
     int number;
     public PlayerData(PlayerData pd) {
         x = pd.x;
@@ -24,6 +26,8 @@ public class PlayerData {
         shootFree = pd.shootFree;
         askShoot = pd.askShoot;
         number = pd.number;
+        askLeaders = pd.askLeaders;
+        password = pd.password;
     }
     public PlayerData(Player p) {
         x = p.getX();
@@ -36,6 +40,8 @@ public class PlayerData {
         number = p.getNumber();
         name = p.getPlayerName();
         askShoot = p.isAskShoot();
+        askLeaders = false;
+        password = null;
     }
 
     public int getY() {
@@ -89,5 +95,17 @@ public class PlayerData {
     }
     public boolean getAskShoot() {
         return askShoot;
+    }
+    public void setAskLeaders(boolean ask) {
+        askLeaders = ask;
+    }
+    public boolean isAskLeaders() {return askLeaders;}
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

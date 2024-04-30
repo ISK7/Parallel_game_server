@@ -13,6 +13,9 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Listener extends Thread {
     private GameData gd = null;
@@ -55,6 +58,10 @@ public class Listener extends Thread {
                             isActive = false;
                             parent.close();
                         }
+                        if(gd.isAskLead()) {
+                            ArrayList<LeaderData> ld = gd.getLeaders();
+                            drawLeaders(ld);
+                        }
                     });
                     String ans = gson.toJson(parent.getPlayer());
                     wait(20);
@@ -64,5 +71,13 @@ public class Listener extends Thread {
         } catch (Exception ex) {
             System.out.println("Listener run: " + ex);
         }
+    }
+
+    private void drawLeaders(ArrayList<LeaderData> ld) {
+        String Board = "";
+        for(LeaderData l : ld) {
+            Board += l.getName() + "   " + l.getCount() + "\n";
+        }
+        showMessageDialog(null, Board);
     }
 }

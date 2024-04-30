@@ -47,6 +47,7 @@ public class GameRunner extends Thread {
     public void addVinner(String wn) {
         winner = wn;
         hasWinner = true;
+        DBSessionManager.addWin(wn);
     }
 
     public void cycle() {
@@ -118,6 +119,8 @@ public class GameRunner extends Thread {
     }
 
     public int AddPlayer(Player p) {
+        //if(!DBSessionManager.newPlayerInGame(p.name, p.getPassword())) return -4;
+        if(!DBSessionManager.newPlayerInGame(p.name,"placeholder")) return -4;
         if(players.size() >= 4) return -3;
         if(isActive) return -2;
         for(Player pl : players) {
@@ -164,6 +167,10 @@ public class GameRunner extends Thread {
             }
         }
         this.Pause();
+    }
+
+    public ArrayList<LeaderData> askLeaders() {
+        return DBSessionManager.getWinners();
     }
 
     public ArrayList<Player> getPlayers() {

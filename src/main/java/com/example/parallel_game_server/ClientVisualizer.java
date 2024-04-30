@@ -29,7 +29,7 @@ public class ClientVisualizer extends Application {
     @FXML
     Circle bigTee, smallTee;
     @FXML
-    Button pauseButton, readyButton, shootButton;
+    Button pauseButton, readyButton, shootButton, leaderBut;
     PlayerData player;
     Stage st;
     Color[] colors = {Color.RED, Color.BLUE,Color.GREEN,Color.BLACK};
@@ -57,6 +57,9 @@ public class ClientVisualizer extends Application {
     public void setReadyButton(Button readyButton) {
         this.readyButton = readyButton;
     }
+    public void setLeaderButton(Button lb) {
+        this.leaderBut = lb;
+    }
 
     public void setPlayer(PlayerData player) {
         this.player = player;
@@ -73,6 +76,7 @@ public class ClientVisualizer extends Application {
         cv.setPauseButton(pauseButton);
         cv.setReadyButton(readyButton);
         cv.setTable(table);
+        cv.setLeaderButton(leaderBut);
 
 
         s.setScene(scene);
@@ -121,6 +125,10 @@ public class ClientVisualizer extends Application {
         readyButton.setDisable(true);
     }
 
+    public void onLeaderClick() {
+        player.setAskLeaders(true);
+    }
+
     public void clearView() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -143,6 +151,7 @@ public class ClientVisualizer extends Application {
         player.setReady(false);
         player.setAskPause(false);
         player.setAskShoot(false);
+        player.setAskLeaders(false);
         return ans;
     }
 

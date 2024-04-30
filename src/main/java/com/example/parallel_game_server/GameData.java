@@ -7,21 +7,25 @@ import java.util.ArrayList;
 
 public class GameData {
     ArrayList<PlayerData> pd = new ArrayList<>();
+    ArrayList<LeaderData> leaders = new ArrayList<>();
     boolean isPause = false;
     double bigy;
     double smally;
     double bigx;
     double smallx;
     boolean isWin;
+    boolean isAskLead;
     String winner;
     public GameData(GameData gd) {
         for(PlayerData p : gd.getPd()) pd.add(new PlayerData(p));
+        for(LeaderData l : gd.getLeaders()) leaders.add(new LeaderData(l));
         bigy = gd.getBigy();
         smally = gd.getSmally();
         bigx = gd.getBigx();
         smallx = gd.getSmallx();
         isWin = gd.isWin;
         winner = gd.winner;
+        isAskLead = gd.isAskLead;
     }
 
     public GameData(GameRunner gr) {
@@ -32,6 +36,8 @@ public class GameData {
         smallx = gr.getSmallx();
         isWin = gr.hasWinner;
         winner = gr.winner;
+        leaders = new ArrayList<>();
+        isAskLead = false;
     }
 
     public ArrayList<PlayerData> getPd() {
@@ -44,6 +50,10 @@ public class GameData {
 
     public boolean isWin() {
         return isWin;
+    }
+
+    public boolean isAskLead() {
+        return isAskLead;
     }
 
     public String getWinner() {
@@ -64,5 +74,14 @@ public class GameData {
 
     public double getSmallx() {
         return smallx;
+    }
+
+    public void setLeaders(ArrayList<LeaderData> leaders) {
+        this.leaders = leaders;
+    }
+    public void setAskLead(boolean b) {this.isAskLead = b;}
+
+    public ArrayList<LeaderData> getLeaders() {
+        return leaders;
     }
 }

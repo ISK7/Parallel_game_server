@@ -83,6 +83,11 @@ public class ClientApplication extends Application {
                 text.setPromptText("No free seats");
                 return;
             }
+            if (result == -4) {
+                text.setText("");
+                text.setPromptText("Incorrect password or DB error");
+                return;
+            }
             s.close();
             ans = dis.readUTF();
             Listener l = new Listener(cs, gson.fromJson(ans,PlayerData.class));

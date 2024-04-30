@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class PlayerListener extends Thread {
     private Socket socket;
@@ -15,6 +16,7 @@ public class PlayerListener extends Thread {
     private GameData gd;
     private RunServer parent;
     private boolean isWin = false;
+    private boolean askLeaders = false;
 
     public void setVal(Socket socket, int n, GameData gd, RunServer runServer) {
         this.socket = socket;
@@ -35,8 +37,15 @@ public class PlayerListener extends Thread {
             synchronized (this) {
                 try {
                     while (true) {
+                        if(askLeaders) {
+                            gd.setAskLead(true);
+                            ArrayList<LeaderData> ld = parent.askLeaders();
+                            gd.setLeaders(ld);
+                        }
                         dos.writeUTF(gson.toJson(gd));
                         dos.flush();
+                        askLeaders = false;
+                        gd.setAskLead(false);
                         if(gd.isWin())
                             break;
                         String ans = dis.readUTF();
@@ -47,6 +56,8 @@ public class PlayerListener extends Thread {
                             parent.changeReady(number);
                         if (pd.isAskPause())
                             parent.changePause(number);
+                        if(pd.isAskLeaders())
+                            askLeaders = true;
                         wait(20);
                     }
                 } catch (EOFException ex) {
